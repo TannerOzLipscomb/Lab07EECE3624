@@ -26,32 +26,55 @@ void updateArray(unsigned char *cp);
 int main(void)
 {
 	// create a 61-char array
-
-
+	unsigned char cellArray[61];
+	initializeArray(&cellArray[0]);
 	// Initialize the UART
 	// ProfNote:  Understand the UARTLibary.h before blindly running the next line!
 	uart_init(BaudRate, DataBits, StopBits, NoParity);
 	
-	// ProfNote:  Initial Testing Only!  Comment out after UART confirmed working!
-	while (1) {
-		uart_tx('H');uart_tx('e');uart_tx('l');uart_tx('l');uart_tx('o');uart_tx('\r');uart_tx('\n');
-		uart_tx('W');uart_tx('o');uart_tx('r');uart_tx('l');uart_tx('d');uart_tx('!');uart_tx('\r');uart_tx('\n');
+    for (int i = 0; i < 122; i++){
+		displayArray(&cellArray[0]); 
+		updateArray(&cellArray[0]);
 	}
-	
-    /* your code goes here */
-
+	while(1){
+	}
 }
 
-/* your subroutines go here */
 void initializeArray(unsigned char *cp){
-	
+	unsigned char src[] = "                              *                              ";
+	memcpy(cp, src, 61);
 }
 void displayArray(unsigned char *cp){
 	// ProfNote:  Look through your line using "uart_tx(<char>)" to print one character at a time.
 	// At the end of the line, use "uart_tx('\r'); uart_tx('\n');" to print a new line to keep your
 	// output aligned properly.
-	
+	for (int i=0; i < 61; i++){
+		if (i == 60){
+			uart_tx(*cp);
+			uart_tx('\r'); 
+			uart_tx('\n');
+		}else{
+			uart_tx(*cp);
+			cp++;
+		}
+	}
 }
 void updateArray(unsigned char *cp){
-	
+	unsigned char nextArray[61];
+	nextArray[0] = ' ';
+	nextArray[60] = ' ';
+	unsigned char *np = &nextArray[1];
+	for (int i=1; i<60; i++){	
+		if ((*(cp+i) == ' ') && (*(cp+1+i) == '*') && (*(cp-1+i) == ' ')){
+			*np = '*';
+		}else if((*(cp+i) == '*') && (*(cp+1+i) == '*') && (*(cp-1+i) == ' ')){
+			*np = '*';
+		}else if ((*(cp+i) == ' ') && (*(cp-1+i) == '*') && (*(cp+1+i) == ' ')){
+			*np = '*';
+			}else{
+			*np = ' ';
+		}
+		np++;
+	}
+	memcpy(cp, nextArray, 61);
 }
